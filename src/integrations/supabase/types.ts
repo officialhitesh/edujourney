@@ -14,7 +14,218 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      assessments: {
+        Row: {
+          answers: Json
+          assessment_type: string
+          completed_at: string
+          created_at: string
+          id: string
+          personality_traits: Json | null
+          questions: Json
+          scores: Json
+          user_id: string
+        }
+        Insert: {
+          answers: Json
+          assessment_type?: string
+          completed_at?: string
+          created_at?: string
+          id?: string
+          personality_traits?: Json | null
+          questions: Json
+          scores: Json
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          assessment_type?: string
+          completed_at?: string
+          created_at?: string
+          id?: string
+          personality_traits?: Json | null
+          questions?: Json
+          scores?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      colleges: {
+        Row: {
+          address: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          courses_offered: string[] | null
+          created_at: string
+          facilities: string[] | null
+          id: string
+          image_url: string | null
+          is_government: boolean | null
+          location_city: string | null
+          location_district: string | null
+          location_state: string | null
+          name: string
+          rating: number | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          courses_offered?: string[] | null
+          created_at?: string
+          facilities?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_government?: boolean | null
+          location_city?: string | null
+          location_district?: string | null
+          location_state?: string | null
+          name: string
+          rating?: number | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          courses_offered?: string[] | null
+          created_at?: string
+          facilities?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_government?: boolean | null
+          location_city?: string | null
+          location_district?: string | null
+          location_state?: string | null
+          name?: string
+          rating?: number | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      recommendations: {
+        Row: {
+          assessment_id: string | null
+          confidence_score: number | null
+          created_at: string
+          id: string
+          reasoning: string | null
+          recommended_colleges: string[] | null
+          recommended_courses: string[] | null
+          recommended_streams: string[] | null
+          user_id: string
+        }
+        Insert: {
+          assessment_id?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          reasoning?: string | null
+          recommended_colleges?: string[] | null
+          recommended_courses?: string[] | null
+          recommended_streams?: string[] | null
+          user_id: string
+        }
+        Update: {
+          assessment_id?: string | null
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          reasoning?: string | null
+          recommended_colleges?: string[] | null
+          recommended_courses?: string[] | null
+          recommended_streams?: string[] | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendations_assessment_id_fkey"
+            columns: ["assessment_id"]
+            isOneToOne: false
+            referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      streams: {
+        Row: {
+          career_prospects: string[] | null
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          requirements: string[] | null
+        }
+        Insert: {
+          career_prospects?: string[] | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          requirements?: string[] | null
+        }
+        Update: {
+          career_prospects?: string[] | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          requirements?: string[] | null
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          age: number | null
+          class_level: number | null
+          created_at: string
+          email: string
+          gender: string | null
+          id: string
+          interests: string[] | null
+          location_district: string | null
+          location_state: string | null
+          name: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          age?: number | null
+          class_level?: number | null
+          created_at?: string
+          email: string
+          gender?: string | null
+          id?: string
+          interests?: string[] | null
+          location_district?: string | null
+          location_state?: string | null
+          name: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          age?: number | null
+          class_level?: number | null
+          created_at?: string
+          email?: string
+          gender?: string | null
+          id?: string
+          interests?: string[] | null
+          location_district?: string | null
+          location_state?: string | null
+          name?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
