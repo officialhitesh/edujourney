@@ -181,6 +181,48 @@ export type Database = {
         }
         Relationships: []
       }
+      student_form: {
+        Row: {
+          career_interest: string
+          class: string
+          created_at: string
+          exam_preference: string
+          id: string
+          interests: string
+          marks: string
+          name: string
+          stream: string | null
+          user_id: string
+          weak_subjects: string | null
+        }
+        Insert: {
+          career_interest: string
+          class: string
+          created_at?: string
+          exam_preference: string
+          id?: string
+          interests: string
+          marks: string
+          name: string
+          stream?: string | null
+          user_id: string
+          weak_subjects?: string | null
+        }
+        Update: {
+          career_interest?: string
+          class?: string
+          created_at?: string
+          exam_preference?: string
+          id?: string
+          interests?: string
+          marks?: string
+          name?: string
+          stream?: string | null
+          user_id?: string
+          weak_subjects?: string | null
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           age: number | null

@@ -6,13 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const assessmentSchema = z.object({
+  name: z.string().min(1, "Please enter your name"),
   qualification: z.string().min(1, "Please select your academic qualification"),
   subjects: z.string().min(1, "Please select your preferred subjects"),
+  weakSubjects: z.string().min(1, "Please select subjects you find difficult"),
   performance: z.string().min(1, "Please select your academic performance"),
   interests: z.string().min(1, "Please select your career interests"),
   learning: z.string().min(1, "Please select your preferred learning environment"),
@@ -21,9 +26,15 @@ const assessmentSchema = z.object({
   exams: z.string().min(1, "Please select your exam preference"),
   mode: z.string().min(1, "Please select your preferred learning mode"),
   motivation: z.string().min(1, "Please select your primary motivation"),
+  stream: z.string().min(1, "Please select your preferred stream"),
 });
 
 const questions = [
+  {
+    id: "name",
+    title: "What is your name?",
+    type: "input",
+  },
   {
     id: "qualification",
     title: "What is your current academic qualification?",
@@ -37,6 +48,16 @@ const questions = [
   {
     id: "subjects",
     title: "Which subjects do you enjoy the most?",
+    options: [
+      { value: "math-science", label: "Mathematics & Science" },
+      { value: "computer-it", label: "Computer Science & IT" },
+      { value: "commerce", label: "Commerce & Accounts" },
+      { value: "arts-languages", label: "Arts & Languages" },
+    ],
+  },
+  {
+    id: "weakSubjects",
+    title: "Which subjects do you find most difficult?",
     options: [
       { value: "math-science", label: "Mathematics & Science" },
       { value: "computer-it", label: "Computer Science & IT" },
@@ -124,6 +145,16 @@ const questions = [
       { value: "growth", label: "Personal growth & learning" },
     ],
   },
+  {
+    id: "stream",
+    title: "Which stream do you prefer?",
+    options: [
+      { value: "science", label: "Science Stream" },
+      { value: "commerce", label: "Commerce Stream" },
+      { value: "arts", label: "Arts Stream" },
+      { value: "unsure", label: "Not sure yet" },
+    ],
+  },
 ];
 
 type FormData = z.infer<typeof assessmentSchema>;
@@ -132,12 +163,15 @@ export default function Assessment() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const form = useForm<FormData>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
+      name: "",
       qualification: "",
       subjects: "",
+      weakSubjects: "",
       performance: "",
       interests: "",
       learning: "",
@@ -146,6 +180,7 @@ export default function Assessment() {
       exams: "",
       mode: "",
       motivation: "",
+      stream: "",
     },
   });
 
@@ -155,14 +190,43 @@ export default function Assessment() {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      // TODO: Submit to Supabase
-      console.log("Assessment data:", data);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to submit your assessment.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('student_form')
+        .insert({
+          user_id: user.id,
+          name: data.name,
+          class: data.qualification,
+          interests: data.subjects,
+          weak_subjects: data.weakSubjects,
+          marks: data.performance,
+          career_interest: data.interests,
+          stream: data.stream,
+          exam_preference: data.exams,
+        });
+
+      if (error) {
+        throw error;
+      }
+
       toast({
         title: "Assessment Completed!",
         description: "Your responses have been saved. Generating recommendations...",
       });
-      // Navigate to results page
+      
+      navigate("/recommendations");
     } catch (error) {
+      console.error("Error submitting assessment:", error);
       toast({
         title: "Error",
         description: "Failed to submit assessment. Please try again.",
@@ -227,40 +291,48 @@ export default function Assessment() {
                     Please select the option that best describes you
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="pt-4">
-                  <FormField
-                    control={form.control}
-                    name={currentField}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            value={field.value}
-                            className="space-y-3"
-                          >
-                            {questions[currentQuestion].options.map((option) => (
-                              <div key={option.value} className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 hover:bg-secondary/20 transition-colors">
-                                <RadioGroupItem 
-                                  value={option.value} 
-                                  id={option.value}
-                                  className="text-primary"
-                                />
-                                <FormLabel 
-                                  htmlFor={option.value}
-                                  className="flex-1 cursor-pointer font-normal"
-                                >
-                                  {option.label}
-                                </FormLabel>
-                              </div>
-                            ))}
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
+                 <CardContent className="pt-4">
+                   <FormField
+                     control={form.control}
+                     name={currentField}
+                     render={({ field }) => (
+                       <FormItem>
+                         <FormControl>
+                           {questions[currentQuestion].type === "input" ? (
+                             <Input
+                               placeholder="Enter your name"
+                               {...field}
+                               className="w-full p-3 text-lg border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
+                             />
+                           ) : (
+                             <RadioGroup
+                               onValueChange={field.onChange}
+                               value={field.value}
+                               className="space-y-3"
+                             >
+                               {questions[currentQuestion].options?.map((option) => (
+                                 <div key={option.value} className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 hover:bg-secondary/20 transition-colors">
+                                   <RadioGroupItem 
+                                     value={option.value} 
+                                     id={option.value}
+                                     className="text-primary"
+                                   />
+                                   <FormLabel 
+                                     htmlFor={option.value}
+                                     className="flex-1 cursor-pointer font-normal"
+                                   >
+                                     {option.label}
+                                   </FormLabel>
+                                 </div>
+                               ))}
+                             </RadioGroup>
+                           )}
+                         </FormControl>
+                         <FormMessage />
+                       </FormItem>
+                     )}
+                   />
+                 </CardContent>
               </Card>
 
               {/* Navigation Buttons */}
