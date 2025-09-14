@@ -50,6 +50,59 @@ export type Database = {
         }
         Relationships: []
       }
+      career_roadmaps: {
+        Row: {
+          avg_salary_max: number | null
+          avg_salary_min: number | null
+          certifications: Json
+          created_at: string
+          entry_roles: Json
+          higher_studies: Json
+          id: string
+          projects: Json
+          skills: Json
+          specialization_id: string
+          top_companies: Json
+          updated_at: string
+        }
+        Insert: {
+          avg_salary_max?: number | null
+          avg_salary_min?: number | null
+          certifications?: Json
+          created_at?: string
+          entry_roles?: Json
+          higher_studies?: Json
+          id?: string
+          projects?: Json
+          skills?: Json
+          specialization_id: string
+          top_companies?: Json
+          updated_at?: string
+        }
+        Update: {
+          avg_salary_max?: number | null
+          avg_salary_min?: number | null
+          certifications?: Json
+          created_at?: string
+          entry_roles?: Json
+          higher_studies?: Json
+          id?: string
+          projects?: Json
+          skills?: Json
+          specialization_id?: string
+          top_companies?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "career_roadmaps_specialization_id_fkey"
+            columns: ["specialization_id"]
+            isOneToOne: false
+            referencedRelation: "specializations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colleges: {
         Row: {
           address: string | null
@@ -104,6 +157,33 @@ export type Database = {
         }
         Relationships: []
       }
+      degrees: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          duration_years: number | null
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          duration_years?: number | null
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          duration_years?: number | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       recommendations: {
         Row: {
           assessment_id: string | null
@@ -144,6 +224,41 @@ export type Database = {
             columns: ["assessment_id"]
             isOneToOne: false
             referencedRelation: "assessments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      specializations: {
+        Row: {
+          code: string
+          created_at: string
+          degree_id: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          degree_id: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          degree_id?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specializations_degree_id_fkey"
+            columns: ["degree_id"]
+            isOneToOne: false
+            referencedRelation: "degrees"
             referencedColumns: ["id"]
           },
         ]
@@ -222,6 +337,55 @@ export type Database = {
           weak_subjects?: string | null
         }
         Relationships: []
+      }
+      user_roadmaps: {
+        Row: {
+          created_at: string
+          degree_id: string
+          id: string
+          roadmap_id: string
+          specialization_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          degree_id: string
+          id?: string
+          roadmap_id: string
+          specialization_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          degree_id?: string
+          id?: string
+          roadmap_id?: string
+          specialization_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roadmaps_degree_id_fkey"
+            columns: ["degree_id"]
+            isOneToOne: false
+            referencedRelation: "degrees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roadmaps_roadmap_id_fkey"
+            columns: ["roadmap_id"]
+            isOneToOne: false
+            referencedRelation: "career_roadmaps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roadmaps_specialization_id_fkey"
+            columns: ["specialization_id"]
+            isOneToOne: false
+            referencedRelation: "specializations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
