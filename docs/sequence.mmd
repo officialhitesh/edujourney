@@ -1,0 +1,71 @@
+sequenceDiagram
+    participant User as Student (Classes 10-12)
+    participant App as EduJourney App
+    participant Auth as Authentication
+    participant Dashboard as User Dashboard
+    participant AI as AI Recommendation Engine
+    participant Data as Database (Supabase)
+
+    %% User Registration/Login Flow
+    User->>App: Visit Landing Page (Index)
+    App->>User: Show Hero, Features, Navigation
+    User->>Auth: Click Login/Signup
+    Auth->>User: Authenticate (Google/GitHub/Email)
+    Auth->>Data: Store User Profile
+    Data->>Auth: Return User Session
+    Auth->>App: Redirect to Dashboard
+
+    %% Main User Journey
+    App->>Dashboard: Load User Dashboard
+    Dashboard->>Data: Fetch User Profile & Progress
+    Data->>Dashboard: Return User Data
+    Dashboard->>User: Show Overview & Options
+
+    %% Assessment Flow
+    User->>App: Navigate to Assessment
+    App->>User: Display Assessment Questions
+    User->>App: Submit Assessment Answers
+    App->>Data: Save Assessment Results
+    Data->>AI: Trigger Recommendation Engine
+    AI->>Data: Analyze Results + Generate Recommendations
+    Data->>App: Store Recommendations
+    App->>User: Show Assessment Results & Next Steps
+
+    %% Stream Exploration Flow
+    User->>App: Navigate to Streams
+    App->>Data: Fetch Available Streams
+    Data->>App: Return Stream Data
+    App->>User: Display Stream Options
+    User->>App: Select Stream of Interest
+    App->>AI: Get Stream-specific Recommendations
+    AI->>App: Return Stream Analysis
+    App->>User: Show Stream Details & Career Paths
+
+    %% College Search Flow
+    User->>App: Navigate to Colleges
+    App->>Data: Fetch College Database
+    Data->>App: Return College Information
+    App->>User: Display College Search Interface
+    User->>App: Apply Filters (Stream, Location, etc.)
+    App->>Data: Query Filtered Colleges
+    Data->>App: Return Filtered Results
+    App->>User: Show College Recommendations
+
+    %% Roadmap Flow
+    User->>App: Navigate to Roadmap
+    App->>AI: Generate Personalized Roadmap
+    AI->>Data: Fetch User Assessment & Preferences
+    Data->>AI: Return User Context
+    AI->>App: Create Career/Education Roadmap
+    App->>User: Display Interactive Roadmap
+    User->>App: Track Progress & Update Milestones
+    App->>Data: Save Progress Updates
+
+    %% Continuous Learning Loop
+    loop Ongoing User Engagement
+        User->>App: Interact with Features
+        App->>AI: Update User Profile & Preferences
+        AI->>Data: Refine Recommendations
+        Data->>App: Provide Updated Insights
+        App->>User: Show Personalized Content
+    end

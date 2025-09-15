@@ -1,0 +1,59 @@
+graph TB
+    %% Main Architecture Layers
+    subgraph "Frontend Layer (React + TypeScript)"
+        UI[UI Components: Shadcn/ui + Tailwind CSS]
+        PAGES[Application Pages: Index, Auth, Dashboard, Assessment, Recommendations, Streams, Roadmap, Colleges]
+        ROUTING[React Router: Navigation Management]
+        STATE[React Query: State Management]
+        HOOKS[Custom Hooks: Business Logic]
+    end
+
+    subgraph "Backend & Data Layer"
+        SUPABASE[Supabase Platform: PostgreSQL + Auth + Realtime]
+        CLIENT[Supabase Client: Database Operations]
+        TYPES[TypeScript Types: Schema Definitions]
+        AI_SERVICES[AI Services: Recommendation Engine]
+    end
+
+    subgraph "Infrastructure Layer"
+        VITE[Vite Build Tool: Development Server]
+        DEPLOY[Deployment: Lovable Platform]
+        CDN[Static Assets: Public Folder]
+    end
+
+    subgraph "External Services"
+        AUTH_PROVIDERS[Auth Providers: Google, GitHub, Email]
+        AI_APIS[External AI APIs: OpenAI/Anthropic]
+        COLLEGE_API[College Data APIs: Education Databases]
+    end
+
+    %% Data Flow Connections
+    UI --> PAGES
+    PAGES --> ROUTING
+    PAGES --> STATE
+    PAGES --> HOOKS
+    HOOKS --> CLIENT
+    CLIENT --> SUPABASE
+    CLIENT --> AI_SERVICES
+    SUPABASE --> AUTH_PROVIDERS
+    AI_SERVICES --> AI_APIS
+    AI_SERVICES --> COLLEGE_API
+    VITE --> DEPLOY
+    DEPLOY --> CDN
+
+    %% Database Schema (Simplified)
+    subgraph "Database Schema (Supabase)"
+        USERS[Users Table: Profile, Preferences]
+        ASSESSMENTS[Assessments Table: Test Results, Scores]
+        STREAMS[Streams Table: Academic Streams Data]
+        COLLEGES[Colleges Table: College Information]
+        RECOMMENDATIONS[Recommendations Table: AI-generated Suggestions]
+        ROADMAPS[Roadmaps Table: Career Paths, Milestones]
+    end
+
+    SUPABASE --> USERS
+    SUPABASE --> ASSESSMENTS
+    SUPABASE --> STREAMS
+    SUPABASE --> COLLEGES
+    SUPABASE --> RECOMMENDATIONS
+    SUPABASE --> ROADMAPS
