@@ -10,6 +10,7 @@ import Assessment from "./pages/Assessment";
 import Recommendations from "./pages/Recommendations";
 import Streams from "./pages/Streams";
 import Roadmap from "./pages/Roadmap";
+import Colleges from "./pages/Colleges";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
         <Route path="/recommendations" element={<Recommendations />} />
         <Route path="/streams" element={<Streams />} />
         <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/colleges" element={<Colleges />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
