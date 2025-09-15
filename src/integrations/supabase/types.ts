@@ -103,6 +103,62 @@ export type Database = {
           },
         ]
       }
+      college_rankings: {
+        Row: {
+          all_india_rank: number | null
+          average_package_lpa: number | null
+          college_id: string
+          created_at: string
+          highest_package_lpa: number | null
+          id: string
+          industry_integration: number | null
+          overall_index_score: number | null
+          placement_percentage: number | null
+          placement_performance: number | null
+          research_output: number | null
+          state_rank: number | null
+          updated_at: string
+        }
+        Insert: {
+          all_india_rank?: number | null
+          average_package_lpa?: number | null
+          college_id: string
+          created_at?: string
+          highest_package_lpa?: number | null
+          id?: string
+          industry_integration?: number | null
+          overall_index_score?: number | null
+          placement_percentage?: number | null
+          placement_performance?: number | null
+          research_output?: number | null
+          state_rank?: number | null
+          updated_at?: string
+        }
+        Update: {
+          all_india_rank?: number | null
+          average_package_lpa?: number | null
+          college_id?: string
+          created_at?: string
+          highest_package_lpa?: number | null
+          id?: string
+          industry_integration?: number | null
+          overall_index_score?: number | null
+          placement_percentage?: number | null
+          placement_performance?: number | null
+          research_output?: number | null
+          state_rank?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_college_rankings_college_id"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colleges: {
         Row: {
           address: string | null
