@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { 
   Brain, 
   GraduationCap, 
@@ -11,7 +11,11 @@ import {
   TrendingUp,
   BookOpen,
   Users,
-  LogOut
+  LogOut,
+  Award,
+  Building2,
+  FileText,
+  Target
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -21,8 +25,78 @@ const Dashboard = () => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [assessmentData, setAssessmentData] = useState<any>(null);
+  const [recommendations, setRecommendations] = useState<any>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const generateRecommendations = (answers: any) => {
+    const degreeMap: Record<string, string[]> = {
+      mathematics: ["B.Tech Computer Science", "B.Sc Mathematics", "B.Tech Engineering", "BCA"],
+      science: ["MBBS", "B.Tech", "B.Sc Physics/Chemistry/Biology", "B.Pharmacy"],
+      commerce: ["B.Com", "BBA", "CA", "CS", "B.Com (Hons)"],
+      arts: ["BA English", "BA History", "BA Political Science", "BA Psychology", "Mass Communication"]
+    };
+
+    const examMap: Record<string, string[]> = {
+      "civil-services": ["UPSC CSE", "SSC CGL", "SSC CHSL", "State PSC"],
+      "technical-medical": ["JEE Main/Advanced", "NEET", "GATE", "CDS"],
+      "management-commerce": ["CAT", "XAT", "MAT", "CA Foundation", "CS Executive"],
+      "creative-humanities": ["CLAT", "AILET", "JMI Mass Communication", "NID", "NIFT"]
+    };
+
+    const collegeMap: Record<string, string[]> = {
+      mathematics: ["IIT Delhi", "IIT Bombay", "Delhi University", "JNU"],
+      science: ["AIIMS Delhi", "IIT Kharagpur", "BHU", "Jamia Millia Islamia"],
+      commerce: ["SRCC", "LSR", "Hindu College", "Shri Ram College"],
+      arts: ["JNU", "Delhi University", "BHU", "Jadavpur University"]
+    };
+
+    const skillsMap: Record<string, string[]> = {
+      mathematics: ["Problem Solving", "Analytical Thinking", "Programming", "Statistics"],
+      science: ["Research Skills", "Critical Thinking", "Laboratory Techniques", "Data Analysis"],
+      commerce: ["Financial Analysis", "Communication", "Leadership", "Business Strategy"],
+      arts: ["Creative Writing", "Communication", "Research", "Cultural Understanding"]
+    };
+
+    const primaryInterest = answers.q1 || 'mathematics';
+    const examInterest = answers.q6 || 'technical-medical';
+
+    return {
+      degrees: degreeMap[primaryInterest] || degreeMap.mathematics,
+      exams: examMap[examInterest] || examMap["technical-medical"],
+      colleges: collegeMap[primaryInterest] || collegeMap.mathematics,
+      skills: skillsMap[primaryInterest] || skillsMap.mathematics,
+      careerPath: answers.q3 || 'private',
+      motivation: answers.q5 || 'passion'
+    };
+  };
+
+  const fetchAssessmentData = async (userId: string) => {
+    try {
+      const { data: assessment, error } = await supabase
+        .from('assessments')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('assessment_type', 'career_survey')
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error("Error fetching assessment:", error);
+        return;
+      }
+
+      if (assessment) {
+        setAssessmentData(assessment);
+        const recs = generateRecommendations(assessment.answers);
+        setRecommendations(recs);
+      }
+    } catch (error) {
+      console.error("Error in fetchAssessmentData:", error);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener
@@ -33,6 +107,8 @@ const Dashboard = () => {
         
         if (!session?.user) {
           navigate('/auth');
+        } else {
+          fetchAssessmentData(session.user.id);
         }
         setIsLoading(false);
       }
@@ -45,6 +121,8 @@ const Dashboard = () => {
       
       if (!session?.user) {
         navigate('/auth');
+      } else {
+        fetchAssessmentData(session.user.id);
       }
       setIsLoading(false);
     });
@@ -199,71 +277,140 @@ const Dashboard = () => {
 
         {/* Progress Overview */}
         <div className="grid lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 card-gradient border-0 shadow-lg animate-slide-up" style={{ animationDelay: '0.4s' }}>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <TrendingUp className="h-5 w-5 mr-2 text-primary" />
-                Your Progress
-              </CardTitle>
-              <CardDescription>Complete these steps to get personalized recommendations</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Profile Setup</span>
-                  <span className="text-muted-foreground">0/4 completed</span>
-                </div>
-                <Progress value={0} className="h-2" />
-              </div>
-              
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Aptitude Assessment</span>
-                  <span className="text-muted-foreground">Not started</span>
-                </div>
-                <Progress value={0} className="h-2" />
-              </div>
-              
-              <div>
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Stream Selection</span>
-                  <span className="text-muted-foreground">Pending assessment</span>
-                </div>
-                <Progress value={0} className="h-2" />
-              </div>
-            </CardContent>
-          </Card>
+          {assessmentData && recommendations ? (
+            <>
+              {/* Personalized Recommendations */}
+              <Card className="lg:col-span-2 card-gradient border-0 shadow-lg animate-slide-up" style={{ animationDelay: '0.4s' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Target className="h-5 w-5 mr-2 text-primary" />
+                    Your Personalized Recommendations
+                  </CardTitle>
+                  <CardDescription>Based on your assessment responses</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Recommended Degrees */}
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center">
+                      <Award className="h-4 w-4 mr-2 text-primary" />
+                      Suggested Degrees
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {recommendations.degrees.map((degree: string, index: number) => (
+                        <Badge key={index} variant="secondary" className="text-sm">
+                          {degree}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Government Exams */}
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-primary" />
+                      Recommended Government Exams
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {recommendations.exams.map((exam: string, index: number) => (
+                        <Badge key={index} variant="outline" className="text-sm">
+                          {exam}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Government Colleges */}
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center">
+                      <Building2 className="h-4 w-4 mr-2 text-primary" />
+                      Top Government Colleges
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {recommendations.colleges.map((college: string, index: number) => (
+                        <Badge key={index} variant="default" className="text-sm">
+                          {college}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Skills to Develop */}
+                  <div>
+                    <h4 className="font-semibold mb-3 flex items-center">
+                      <Brain className="h-4 w-4 mr-2 text-primary" />
+                      Skills to Develop
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {recommendations.skills.map((skill: string, index: number) => (
+                        <Badge key={index} variant="destructive" className="text-sm">
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-          <Card className="card-gradient border-0 shadow-lg animate-slide-up" style={{ animationDelay: '0.5s' }}>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="h-5 w-5 mr-2 text-secondary" />
-                Quick Tips
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-primary/10 rounded-lg">
-                <h4 className="font-medium text-sm mb-1">Complete Your Assessment</h4>
-                <p className="text-xs text-muted-foreground">
-                  Take our 15-minute assessment to get personalized stream recommendations.
+              {/* Assessment Summary */}
+              <Card className="card-gradient border-0 shadow-lg animate-slide-up" style={{ animationDelay: '0.5s' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <TrendingUp className="h-5 w-5 mr-2 text-secondary" />
+                    Assessment Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-primary/10 rounded-lg">
+                    <h4 className="font-medium text-sm mb-1">Career Path</h4>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {recommendations.careerPath?.replace('-', ' ')} sector focus
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-secondary/10 rounded-lg">
+                    <h4 className="font-medium text-sm mb-1">Primary Motivation</h4>
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {recommendations.motivation?.replace('-', ' ')}
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-tertiary/10 rounded-lg">
+                    <h4 className="font-medium text-sm mb-1">Assessment Status</h4>
+                    <p className="text-xs text-primary">
+                      ✅ Completed on {new Date(assessmentData.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4"
+                    onClick={() => navigate('/assessment')}
+                  >
+                    Retake Assessment
+                  </Button>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            /* Call to Action if No Assessment */
+            <Card className="lg:col-span-3 card-gradient border-0 shadow-lg animate-slide-up text-center py-12">
+              <CardContent>
+                <Brain className="h-16 w-16 text-primary mx-auto mb-4" />
+                <h3 className="text-2xl font-bold mb-4">Get Your Personalized Recommendations</h3>
+                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                  Take our comprehensive 9-question assessment to receive personalized degree recommendations, 
+                  government exam suggestions, college options, and skill development guidance.
                 </p>
-              </div>
-              
-              <div className="p-4 bg-secondary/10 rounded-lg">
-                <h4 className="font-medium text-sm mb-1">Explore Government Colleges</h4>
-                <p className="text-xs text-muted-foreground">
-                  Browse over 2000+ government colleges with detailed information.
-                </p>
-              </div>
-              
-              <div className="p-4 bg-tertiary/10 rounded-lg">
-                <h4 className="font-medium text-sm mb-1">Track Important Dates</h4>
-                <p className="text-xs text-muted-foreground">
-                  Stay updated with admission deadlines and entrance exam dates.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+                <Button 
+                  size="lg" 
+                  className="bg-gradient-to-r from-primary to-primary-glow"
+                  onClick={() => navigate('/assessment')}
+                >
+                  Take Assessment Now
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

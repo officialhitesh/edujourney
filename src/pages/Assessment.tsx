@@ -14,145 +14,106 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
 const assessmentSchema = z.object({
-  name: z.string().min(1, "Please enter your name"),
-  qualification: z.string().min(1, "Please select your academic qualification"),
-  subjects: z.string().min(1, "Please select your preferred subjects"),
-  weakSubjects: z.string().min(1, "Please select subjects you find difficult"),
-  performance: z.string().min(1, "Please select your academic performance"),
-  interests: z.string().min(1, "Please select your career interests"),
-  learning: z.string().min(1, "Please select your preferred learning environment"),
-  goal: z.string().min(1, "Please select your long-term career goal"),
-  relocate: z.string().min(1, "Please select your relocation preference"),
-  exams: z.string().min(1, "Please select your exam preference"),
-  mode: z.string().min(1, "Please select your preferred learning mode"),
-  motivation: z.string().min(1, "Please select your primary motivation"),
-  stream: z.string().min(1, "Please select your preferred stream"),
+  q1: z.string().min(1, "Please select an option"),
+  q2: z.string().min(1, "Please select an option"),
+  q3: z.string().min(1, "Please select an option"),
+  q4: z.string().min(1, "Please select an option"),
+  q5: z.string().min(1, "Please select an option"),
+  q6: z.string().min(1, "Please select an option"),
+  q7: z.string().min(1, "Please select an option"),
+  q8: z.string().min(1, "Please select an option"),
+  q9: z.string().min(1, "Please select an option"),
 });
 
 const questions = [
   {
-    id: "name",
-    title: "What is your name?",
-    type: "input",
-  },
-  {
-    id: "qualification",
-    title: "What is your current academic qualification?",
+    id: "q1",
+    title: "Which subject do you enjoy the most?",
     options: [
-      { value: "class10", label: "Class 10" },
-      { value: "class12", label: "Class 12" },
-      { value: "undergraduate", label: "Undergraduate Degree" },
-      { value: "postgraduate", label: "Postgraduate Degree" },
+      { value: "mathematics", label: "Mathematics" },
+      { value: "science", label: "Science (Physics, Chemistry, Biology)" },
+      { value: "commerce", label: "Commerce & Business Studies" },
+      { value: "arts", label: "Arts, Languages & Humanities" },
     ],
   },
   {
-    id: "subjects",
-    title: "Which subjects do you enjoy the most?",
+    id: "q2",
+    title: "What type of work excites you the most?",
     options: [
-      { value: "math-science", label: "Mathematics & Science" },
-      { value: "computer-it", label: "Computer Science & IT" },
-      { value: "commerce", label: "Commerce & Accounts" },
-      { value: "arts-languages", label: "Arts & Languages" },
+      { value: "problem-solving", label: "Solving problems & logical reasoning" },
+      { value: "research", label: "Research, experiments & innovation" },
+      { value: "business", label: "Managing business, finance & trade" },
+      { value: "creative", label: "Creative activities (writing, design, media, art)" },
     ],
   },
   {
-    id: "weakSubjects",
-    title: "Which subjects do you find most difficult?",
+    id: "q3",
+    title: "What is your long-term career preference?",
     options: [
-      { value: "math-science", label: "Mathematics & Science" },
-      { value: "computer-it", label: "Computer Science & IT" },
-      { value: "commerce", label: "Commerce & Accounts" },
-      { value: "arts-languages", label: "Arts & Languages" },
+      { value: "government", label: "Government Job (UPSC, SSC, Banking, Defence, State Exams)" },
+      { value: "private", label: "Private Sector (IT, Corporate Jobs, Startups)" },
+      { value: "research-higher", label: "Research & Higher Studies (Scientist, Professor, PhD)" },
+      { value: "entrepreneur", label: "Entrepreneurship / Creative Career" },
     ],
   },
   {
-    id: "performance",
-    title: "What is your average academic performance?",
+    id: "q4",
+    title: "Do you prefer theoretical or practical learning?",
     options: [
-      { value: "excellent", label: "90% or above (Excellent)" },
-      { value: "good", label: "75-90% (Good)" },
-      { value: "average", label: "60-75% (Average)" },
-      { value: "improvement", label: "Below 60% (Needs Improvement)" },
+      { value: "theoretical", label: "Mostly Theoretical (reading, concepts, analysis)" },
+      { value: "practical", label: "Mostly Practical (hands-on, experiments, fieldwork)" },
+      { value: "balanced", label: "Balanced mix of both" },
+      { value: "depends", label: "Depends on subject area" },
     ],
   },
   {
-    id: "interests",
-    title: "What are your primary career interests?",
+    id: "q5",
+    title: "What motivates you the most in choosing a career?",
     options: [
-      { value: "engineering", label: "Engineering & Technology" },
-      { value: "medicine", label: "Medicine & Healthcare" },
-      { value: "business", label: "Business & Finance" },
-      { value: "government", label: "Government & Civil Services" },
+      { value: "security", label: "Job Security & Stability" },
+      { value: "salary", label: "High Salary & Growth Opportunities" },
+      { value: "social-impact", label: "Social Impact / Serving the Nation" },
+      { value: "passion", label: "Passion, Creativity & Personal Interest" },
     ],
   },
   {
-    id: "learning",
-    title: "What type of learning environment do you prefer?",
+    id: "q6",
+    title: "Which type of exams are you most interested in?",
     options: [
-      { value: "practical", label: "Practical/Hands-on" },
-      { value: "theoretical", label: "Theoretical/Research-based" },
-      { value: "both", label: "Both equally" },
-      { value: "self-paced", label: "Self-paced learning" },
+      { value: "civil-services", label: "Civil Services & Govt Exams (UPSC, SSC, Railways, Banking)" },
+      { value: "technical-medical", label: "Technical/Medical Exams (JEE, NEET, GATE, CDS)" },
+      { value: "management-commerce", label: "Management & Commerce Exams (CA, CS, CAT, MBA)" },
+      { value: "creative-humanities", label: "Creative & Humanities Exams (Law, Mass Comm, Fine Arts, UPSC-Arts)" },
     ],
   },
   {
-    id: "goal",
-    title: "What is your long-term career goal?",
+    id: "q7",
+    title: "What kind of work environment do you prefer?",
     options: [
-      { value: "corporate", label: "Corporate Job" },
-      { value: "entrepreneurship", label: "Entrepreneurship" },
-      { value: "research", label: "Higher Studies & Research" },
-      { value: "public-service", label: "Public Service" },
+      { value: "people", label: "Working with People (teaching, social service, management)" },
+      { value: "technology", label: "Working with Technology (computers, machines, engineering)" },
+      { value: "ideas", label: "Working with Ideas (research, writing, design)" },
+      { value: "combination", label: "Combination of all three" },
     ],
   },
   {
-    id: "relocate",
-    title: "Are you willing to relocate for higher education?",
+    id: "q8",
+    title: "What type of college do you prefer for higher studies?",
     options: [
-      { value: "anywhere", label: "Yes, anywhere in India" },
-      { value: "nearby", label: "Yes, to a nearby state" },
-      { value: "local", label: "No, prefer local colleges" },
-      { value: "unsure", label: "Not sure, open to options" },
+      { value: "government", label: "Government Colleges / Universities" },
+      { value: "private", label: "Private Colleges / Universities" },
+      { value: "distance", label: "Distance / Online Learning (IGNOU, Online Platforms)" },
+      { value: "no-preference", label: "No specific preference" },
     ],
   },
   {
-    id: "exams",
-    title: "Which competitive exams are you most interested in preparing for?",
+    id: "q9",
+    title: "What type of career roadmap would you find most useful?",
     options: [
-      { value: "jee-neet", label: "JEE/NEET (Science)" },
-      { value: "cuet", label: "CUET (All Streams)" },
-      { value: "upsc-ssc", label: "UPSC/SSC (Government)" },
-      { value: "cat-gmat", label: "CAT/GMAT (Management)" },
-    ],
-  },
-  {
-    id: "mode",
-    title: "What is your preferred mode of learning?",
-    options: [
-      { value: "classroom", label: "Classroom Learning" },
-      { value: "online", label: "Online Learning" },
-      { value: "hybrid", label: "Hybrid (Both)" },
-      { value: "self-study", label: "Self-study with mentors" },
-    ],
-  },
-  {
-    id: "motivation",
-    title: "What is your primary motivation for your career choice?",
-    options: [
-      { value: "salary", label: "High salary & job security" },
-      { value: "passion", label: "Passion for the field" },
-      { value: "social-impact", label: "Making a social impact" },
-      { value: "growth", label: "Personal growth & learning" },
-    ],
-  },
-  {
-    id: "stream",
-    title: "Which stream do you prefer?",
-    options: [
-      { value: "science", label: "Science Stream" },
-      { value: "commerce", label: "Commerce Stream" },
-      { value: "arts", label: "Arts Stream" },
-      { value: "unsure", label: "Not sure yet" },
+      { value: "exam-prep", label: "Step-by-step exam preparation guide" },
+      { value: "courses-colleges", label: "Courses & College recommendations" },
+      { value: "job-opportunities", label: "Future job roles & career opportunities" },
+      { value: "all", label: "All of the above" },
     ],
   },
 ];
@@ -168,19 +129,15 @@ export default function Assessment() {
   const form = useForm<FormData>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
-      name: "",
-      qualification: "",
-      subjects: "",
-      weakSubjects: "",
-      performance: "",
-      interests: "",
-      learning: "",
-      goal: "",
-      relocate: "",
-      exams: "",
-      mode: "",
-      motivation: "",
-      stream: "",
+      q1: "",
+      q2: "",
+      q3: "",
+      q4: "",
+      q5: "",
+      q6: "",
+      q7: "",
+      q8: "",
+      q9: "",
     },
   });
 
@@ -201,30 +158,47 @@ export default function Assessment() {
         return;
       }
 
-      const { error } = await supabase
-        .from('student_form')
+      // Insert assessment data
+      const { error: assessmentError } = await supabase
+        .from('assessments')
         .insert({
           user_id: user.id,
-          name: data.name,
-          class: data.qualification,
-          interests: data.subjects,
-          weak_subjects: data.weakSubjects,
-          marks: data.performance,
-          career_interest: data.interests,
-          stream: data.stream,
-          exam_preference: data.exams,
+          assessment_type: 'career_survey',
+          questions: questions.map(q => q.title),
+          answers: data,
+          scores: {},
+          personality_traits: {},
         });
 
-      if (error) {
-        throw error;
+      if (assessmentError) {
+        console.error("Error inserting assessment:", assessmentError);
+      }
+
+      // Also update student_form for backward compatibility
+      const { error: formError } = await supabase
+        .from('student_form')
+        .upsert({
+          user_id: user.id,
+          name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+          class: '12th', // Default value
+          interests: data.q1,
+          weak_subjects: '',
+          marks: 'good',
+          career_interest: data.q3,
+          stream: data.q1 === 'science' ? 'Science' : data.q1 === 'commerce' ? 'Commerce' : 'Arts',
+          exam_preference: data.q6,
+        });
+
+      if (formError) {
+        console.error("Error updating student form:", formError);
       }
 
       toast({
         title: "Assessment Completed!",
-        description: "Your responses have been saved. Generating recommendations...",
+        description: "Your responses have been saved. Redirecting to dashboard...",
       });
       
-      navigate("/recommendations");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error submitting assessment:", error);
       toast({
@@ -251,6 +225,18 @@ export default function Assessment() {
 
   const currentField = questions[currentQuestion].id as keyof FormData;
   const isCurrentQuestionAnswered = form.watch(currentField);
+
+  // Auto-advance to next question when an option is selected
+  const handleOptionSelect = (value: string) => {
+    form.setValue(currentField, value);
+    
+    // Auto-advance to next question after a short delay
+    setTimeout(() => {
+      if (currentQuestion < totalQuestions - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      }
+    }, 300);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/10">
@@ -298,35 +284,27 @@ export default function Assessment() {
                      render={({ field }) => (
                        <FormItem>
                          <FormControl>
-                           {questions[currentQuestion].type === "input" ? (
-                             <Input
-                               placeholder="Enter your name"
-                               {...field}
-                               className="w-full p-3 text-lg border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
-                             />
-                           ) : (
-                             <RadioGroup
-                               onValueChange={field.onChange}
-                               value={field.value}
-                               className="space-y-3"
-                             >
-                               {questions[currentQuestion].options?.map((option) => (
-                                 <div key={option.value} className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:border-primary/50 hover:bg-secondary/20 transition-colors">
-                                   <RadioGroupItem 
-                                     value={option.value} 
-                                     id={option.value}
-                                     className="text-primary"
-                                   />
-                                   <FormLabel 
-                                     htmlFor={option.value}
-                                     className="flex-1 cursor-pointer font-normal"
-                                   >
-                                     {option.label}
-                                   </FormLabel>
-                                 </div>
-                               ))}
-                             </RadioGroup>
-                           )}
+                           <RadioGroup
+                             onValueChange={handleOptionSelect}
+                             value={field.value}
+                             className="space-y-3"
+                           >
+                             {questions[currentQuestion].options?.map((option) => (
+                               <div key={option.value} className="flex items-center space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 hover:bg-secondary/20 transition-colors cursor-pointer">
+                                 <RadioGroupItem 
+                                   value={option.value} 
+                                   id={option.value}
+                                   className="text-primary"
+                                 />
+                                 <FormLabel 
+                                   htmlFor={option.value}
+                                   className="flex-1 cursor-pointer font-normal text-base"
+                                 >
+                                   {option.label}
+                                 </FormLabel>
+                               </div>
+                             ))}
+                           </RadioGroup>
                          </FormControl>
                          <FormMessage />
                        </FormItem>
@@ -348,7 +326,7 @@ export default function Assessment() {
                   Previous
                 </Button>
 
-                {currentQuestion === totalQuestions - 1 ? (
+                {currentQuestion === totalQuestions - 1 && (
                   <Button
                     type="submit"
                     disabled={!isCurrentQuestionAnswered || isSubmitting}
@@ -356,16 +334,6 @@ export default function Assessment() {
                   >
                     <CheckCircle className="h-4 w-4" />
                     {isSubmitting ? "Submitting..." : "Complete Assessment"}
-                  </Button>
-                ) : (
-                  <Button
-                    type="button"
-                    onClick={nextQuestion}
-                    disabled={!isCurrentQuestionAnswered}
-                    className="flex items-center gap-2"
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4" />
                   </Button>
                 )}
               </div>
