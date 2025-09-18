@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Assessment from "./pages/Assessment";
+import SurveyReport from "./pages/SurveyReport";
 import Recommendations from "./pages/Recommendations";
 import Streams from "./pages/Streams";
 import Roadmap from "./pages/Roadmap";
@@ -27,6 +28,7 @@ const App = () => (
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/assessment" element={<Assessment />} />
+        <Route path="/survey-report" element={<SurveyReport />} />
         <Route path="/recommendations" element={<Recommendations />} />
         <Route path="/streams" element={<Streams />} />
         <Route path="/roadmap" element={<Roadmap />} />

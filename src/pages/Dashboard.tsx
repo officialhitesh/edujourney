@@ -275,124 +275,45 @@ const Dashboard = () => {
           </Card>
         </div>
 
+        {/* Survey Summary - only show if user has completed assessment */}
+        {assessmentData && (
+          <div className="mb-8">
+            <Card className="border-l-4 border-l-primary">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Target className="h-5 w-5 text-primary" />
+                  Your Survey Summary
+                </CardTitle>
+                <CardDescription>
+                  Based on your recent assessment. <button onClick={() => navigate("/survey-report")} className="text-primary hover:underline">View full report →</button>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="text-center p-3 rounded-lg bg-secondary/30">
+                    <div className="text-sm font-medium text-muted-foreground">Career Path</div>
+                    <div className="text-lg font-semibold capitalize">{recommendations?.careerPath?.replace('-', ' ') || 'Not specified'}</div>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-secondary/30">
+                    <div className="text-sm font-medium text-muted-foreground">Motivation</div>
+                    <div className="text-lg font-semibold capitalize">{recommendations?.motivation?.replace('-', ' ') || 'Not specified'}</div>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-secondary/30">
+                    <div className="text-sm font-medium text-muted-foreground">Recommended Degrees</div>
+                    <div className="text-sm font-medium">{recommendations?.degrees?.slice(0, 2).join(', ') || 'Not available'}</div>
+                  </div>
+                  <div className="text-center p-3 rounded-lg bg-secondary/30">
+                    <div className="text-sm font-medium text-muted-foreground">Assessment Date</div>
+                    <div className="text-sm font-medium">{new Date(assessmentData.created_at).toLocaleDateString()}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
         {/* Progress Overview */}
         <div className="grid lg:grid-cols-3 gap-6">
-          {assessmentData && recommendations ? (
-            <>
-              {/* Personalized Recommendations */}
-              <Card className="lg:col-span-2 card-gradient border-0 shadow-lg animate-slide-up" style={{ animationDelay: '0.4s' }}>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Target className="h-5 w-5 mr-2 text-primary" />
-                    Your Personalized Recommendations
-                  </CardTitle>
-                  <CardDescription>Based on your assessment responses</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Recommended Degrees */}
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center">
-                      <Award className="h-4 w-4 mr-2 text-primary" />
-                      Suggested Degrees
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {recommendations.degrees.map((degree: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="text-sm">
-                          {degree}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Government Exams */}
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center">
-                      <FileText className="h-4 w-4 mr-2 text-primary" />
-                      Recommended Government Exams
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {recommendations.exams.map((exam: string, index: number) => (
-                        <Badge key={index} variant="outline" className="text-sm">
-                          {exam}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Government Colleges */}
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center">
-                      <Building2 className="h-4 w-4 mr-2 text-primary" />
-                      Top Government Colleges
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {recommendations.colleges.map((college: string, index: number) => (
-                        <Badge key={index} variant="default" className="text-sm">
-                          {college}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Skills to Develop */}
-                  <div>
-                    <h4 className="font-semibold mb-3 flex items-center">
-                      <Brain className="h-4 w-4 mr-2 text-primary" />
-                      Skills to Develop
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {recommendations.skills.map((skill: string, index: number) => (
-                        <Badge key={index} variant="destructive" className="text-sm">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Assessment Summary */}
-              <Card className="card-gradient border-0 shadow-lg animate-slide-up" style={{ animationDelay: '0.5s' }}>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <TrendingUp className="h-5 w-5 mr-2 text-secondary" />
-                    Assessment Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-4 bg-primary/10 rounded-lg">
-                    <h4 className="font-medium text-sm mb-1">Career Path</h4>
-                    <p className="text-xs text-muted-foreground capitalize">
-                      {recommendations.careerPath?.replace('-', ' ')} sector focus
-                    </p>
-                  </div>
-                  
-                  <div className="p-4 bg-secondary/10 rounded-lg">
-                    <h4 className="font-medium text-sm mb-1">Primary Motivation</h4>
-                    <p className="text-xs text-muted-foreground capitalize">
-                      {recommendations.motivation?.replace('-', ' ')}
-                    </p>
-                  </div>
-                  
-                  <div className="p-4 bg-tertiary/10 rounded-lg">
-                    <h4 className="font-medium text-sm mb-1">Assessment Status</h4>
-                    <p className="text-xs text-primary">
-                      ✅ Completed on {new Date(assessmentData.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                  <Button 
-                    variant="outline" 
-                    className="w-full mt-4"
-                    onClick={() => navigate('/assessment')}
-                  >
-                    Retake Assessment
-                  </Button>
-                </CardContent>
-              </Card>
-            </>
-          ) : (
-            /* Call to Action if No Assessment */
+          {!assessmentData && (
             <Card className="lg:col-span-3 card-gradient border-0 shadow-lg animate-slide-up text-center py-12">
               <CardContent>
                 <Brain className="h-16 w-16 text-primary mx-auto mb-4" />

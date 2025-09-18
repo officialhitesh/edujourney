@@ -195,10 +195,10 @@ export default function Assessment() {
 
       toast({
         title: "Assessment Completed!",
-        description: "Your responses have been saved. Redirecting to dashboard...",
+        description: "Your responses have been saved. View your results now!",
       });
       
-      navigate("/dashboard");
+      navigate("/survey-report");
     } catch (error) {
       console.error("Error submitting assessment:", error);
       toast({
