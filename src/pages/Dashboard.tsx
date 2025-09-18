@@ -289,7 +289,7 @@ const Dashboard = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                   <div className="text-center p-3 rounded-lg bg-secondary/30">
                     <div className="text-sm font-medium text-muted-foreground">Career Path</div>
                     <div className="text-lg font-semibold capitalize">{recommendations?.careerPath?.replace('-', ' ') || 'Not specified'}</div>
@@ -305,6 +305,83 @@ const Dashboard = () => {
                   <div className="text-center p-3 rounded-lg bg-secondary/30">
                     <div className="text-sm font-medium text-muted-foreground">Assessment Date</div>
                     <div className="text-sm font-medium">{new Date(assessmentData.created_at).toLocaleDateString()}</div>
+                  </div>
+                </div>
+
+                {/* Personalized Recommendations */}
+                <div className="space-y-6">
+                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <Award className="h-5 w-5 text-primary" />
+                    Your Personalized Recommendations
+                  </h3>
+                  
+                  {/* Government Exams */}
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2 text-muted-foreground">
+                      <FileText className="h-4 w-4" />
+                      Recommended Government Exams
+                    </h4>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {recommendations?.exams?.slice(0, 4).map((exam, index) => (
+                        <div key={index} className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors">
+                          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <FileText className="h-4 w-4 text-white" />
+                          </div>
+                          <span className="text-sm font-medium">{exam}</span>
+                        </div>
+                      )) || <div className="text-sm text-muted-foreground">Take assessment to get recommendations</div>}
+                    </div>
+                  </div>
+
+                  {/* Recommended Colleges */}
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2 text-muted-foreground">
+                      <Building2 className="h-4 w-4" />
+                      Recommended Colleges
+                    </h4>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {recommendations?.colleges?.slice(0, 4).map((college, index) => (
+                        <div key={index} className="flex items-center gap-2 p-3 rounded-lg bg-secondary/5 border border-secondary/20 hover:bg-secondary/10 transition-colors">
+                          <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center">
+                            <Building2 className="h-4 w-4 text-white" />
+                          </div>
+                          <span className="text-sm font-medium">{college}</span>
+                        </div>
+                      )) || <div className="text-sm text-muted-foreground">Take assessment to get recommendations</div>}
+                    </div>
+                  </div>
+
+                  {/* Suggested Degrees */}
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2 text-muted-foreground">
+                      <GraduationCap className="h-4 w-4" />
+                      Suggested Degree Programs
+                    </h4>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {recommendations?.degrees?.slice(0, 4).map((degree, index) => (
+                        <div key={index} className="flex items-center gap-2 p-3 rounded-lg bg-tertiary/5 border border-tertiary/20 hover:bg-tertiary/10 transition-colors">
+                          <div className="w-8 h-8 bg-tertiary rounded-full flex items-center justify-center">
+                            <GraduationCap className="h-4 w-4 text-white" />
+                          </div>
+                          <span className="text-sm font-medium">{degree}</span>
+                        </div>
+                      )) || <div className="text-sm text-muted-foreground">Take assessment to get recommendations</div>}
+                    </div>
+                  </div>
+
+                  {/* Skills to Develop */}
+                  <div>
+                    <h4 className="font-medium mb-3 flex items-center gap-2 text-muted-foreground">
+                      <TrendingUp className="h-4 w-4" />
+                      Skills to Develop
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {recommendations?.skills?.map((skill, index) => (
+                        <Badge key={index} variant="outline" className="bg-accent/10 border-accent/20">
+                          {skill}
+                        </Badge>
+                      )) || <Badge variant="outline">Take assessment to get skill recommendations</Badge>}
+                    </div>
                   </div>
                 </div>
               </CardContent>
