@@ -26,6 +26,9 @@ const Navbar = () => {
           <Link to="/streams" className="text-muted-foreground hover:text-primary transition-smooth">
             Explore Streams
           </Link>
+          <Link to="/career-pulse" className="text-muted-foreground hover:text-primary transition-smooth">
+            Career Pulse
+          </Link>
           <Link to="/about" className="text-muted-foreground hover:text-primary transition-smooth">
             About
           </Link>
@@ -76,6 +79,13 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Explore Streams
+            </Link>
+            <Link 
+              to="/career-pulse" 
+              className="text-muted-foreground hover:text-primary transition-smooth py-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Career Pulse
             </Link>
             <Link 
               to="/about" 

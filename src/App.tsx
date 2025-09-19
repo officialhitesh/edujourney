@@ -14,6 +14,7 @@ import Roadmap from "./pages/Roadmap";
 import Colleges from "./pages/Colleges";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
+import CareerPulse from "./pages/CareerPulse";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
         <Route path="/streams" element={<Streams />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/colleges" element={<Colleges />} />
+        <Route path="/career-pulse" element={<CareerPulse />} />
         <Route path="/about" element={<About />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
